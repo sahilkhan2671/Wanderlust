@@ -35,20 +35,20 @@ const __dirname = path.dirname(__filename);
 const dbUrl = process.env.ATLASDB_URL;
 
 
-
 async function startServer() {
     if (!dbUrl) {
-        console.error("ATLASDB_URL missing in .env file");
+        console.error("ATLASDB_URL is missing");
         process.exit(1);
     }
 
     try {
         await mongoose.connect(dbUrl);
-
         console.log("Connected to MongoDB Atlas");
 
-        app.listen(8080, () => {
-            console.log("Server is listening on port 8080");
+        const PORT = process.env.PORT || 8080;
+
+        app.listen(PORT, "0.0.0.0", () => {
+            console.log(`Server is listening on port ${PORT}`);
         });
     } catch (err) {
         console.error("Database connection error:", err.message);
@@ -57,7 +57,6 @@ async function startServer() {
 }
 
 startServer();
-
 
 
 
@@ -153,6 +152,10 @@ app.use((req, res, next) => {
 
 // Listing routes
 app.use("/listings", listingRouter);
+
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
 
 
 // Review routes
