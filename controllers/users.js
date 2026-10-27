@@ -1,23 +1,20 @@
+
 import User from "../models/user.js";
 
-
 const renderSignupForm = (req, res) => {
-    res.render("users/signup.ejs");
+    res.render("users/signUp.ejs");
 };
-
 
 const signup = async (req, res, next) => {
     try {
-        let { username, email, password } = req.body;
+        const { username, email, password } = req.body;
 
         const newUser = new User({
-            email,
             username,
+            email,
         });
 
         const registerUser = await User.register(newUser, password);
-
-        console.log(registerUser);
 
         req.login(registerUser, (err) => {
             if (err) {
@@ -25,41 +22,42 @@ const signup = async (req, res, next) => {
             }
 
             req.flash("success", "Welcome to Wanderlust");
-
             res.redirect("/listings");
         });
-    } catch (e) {
-        req.flash("error", e.message);
+    } catch (err) {
+        req.flash("error", err.message);
         res.redirect("/signup");
     }
 };
 
-
-
-const renderLoginFrom =  (req, res) => {
+const renderLoginFrom = (req, res) => {
     res.render("users/login.ejs");
 };
 
-
-const login = async (req, res) => {
+const login = (req, res) => {
     req.flash("success", "Welcome back to Wanderlust!");
-    let redirectUrl = res.locals.redirectUrl || "/listings";
+
+    const redirectUrl = res.locals.redirectUrl || "/listings";
     res.redirect(redirectUrl);
-}
-
-const logout = (req, res, next) => {
-  req.logout((err) => {
-    if (err) return next(err);
-
-    req.flash("success", "You are logged out successfully!");
-
-    req.session.save((err) => {
-      if (err) return next(err);
-      res.redirect("/listings");
-    });
-  });
 };
 
+const logout = (req, res, next) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+
+        req.flash("success", "You are logged out successfully!");
+
+        req.session.save((err) => {
+            if (err) {
+                return next(err);
+            }
+
+            res.redirect("/listings");
+        });
+    });
+};
 
 export default {
     renderSignupForm,
@@ -68,5 +66,3 @@ export default {
     login,
     logout,
 };
-
-
