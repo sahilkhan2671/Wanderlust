@@ -1,0 +1,373 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  .edit-page {
+    max-width: 850px;
+    margin: 35px auto 65px;
+    padding: 0 20px;
+    color: #222;
+  }
+
+  .edit-header {
+    margin-bottom: 28px;
+  }
+
+  .edit-header h1 {
+    font-size: clamp(1.7rem, 3vw, 2.3rem);
+    font-weight: 800;
+    letter-spacing: -0.7px;
+    margin-bottom: 10px;
+  }
+
+  .edit-header p {
+    color: #717171;
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  .edit-card {
+    padding: 32px;
+    border: 1px solid #eee;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  .edit-form .form-label {
+    font-weight: 650;
+    margin-bottom: 9px;
+    color: #333;
+  }
+
+  .edit-form .form-control {
+    padding: 12px 14px;
+    border: 1px solid #d8d8d8;
+    border-radius: 11px;
+    font-size: 0.96rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .edit-form .form-control:focus {
+    border-color: #ff385c;
+    box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.12);
+  }
+
+  .edit-form textarea {
+    min-height: 140px;
+    resize: vertical;
+  }
+
+  .edit-form .form-text {
+    color: #717171;
+    font-size: 0.85rem;
+    margin-top: 7px;
+  }
+
+  .edit-image-section {
+    padding: 18px;
+    border: 1px solid #eee;
+    border-radius: 15px;
+    background: #fafafa;
+  }
+
+  .edit-image-title {
+    font-weight: 700;
+    margin-bottom: 13px;
+  }
+
+  .edit-current-image {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    height: 210px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    background: #f1f1f1;
+  }
+
+  .edit-image-note {
+    color: #717171;
+    font-size: 0.88rem;
+    margin: 12px 0 0;
+  }
+
+  .edit-form-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 28px 0;
+  }
+
+  .edit-form-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .edit-submit-btn,
+  .edit-cancel-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 11px 22px;
+    border-radius: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .edit-submit-btn {
+    border: 1px solid #ff385c;
+    background: #ff385c;
+    color: white;
+  }
+
+  .edit-submit-btn:hover {
+    background: #e31c5f;
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  .edit-cancel-btn {
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+  }
+
+  .edit-cancel-btn:hover {
+    background: #f5f5f5;
+    color: #222;
+  }
+
+  @media (max-width: 576px) {
+    .edit-page {
+      margin-top: 22px;
+      padding: 0 12px;
+    }
+
+    .edit-card {
+      padding: 20px 16px;
+      border-radius: 15px;
+    }
+
+    .edit-current-image {
+      max-width: 100%;
+      height: 220px;
+    }
+
+    .edit-form-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .edit-form-actions a,
+    .edit-form-actions button {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="edit-page">
+
+  <!-- Page heading -->
+  <header class="edit-header">
+    <h1>Edit your listing</h1>
+    <p>
+      Make changes to your property details and keep your WanderLust
+      listing up to date.
+    </p>
+  </header>
+
+  <!-- Edit form -->
+  <div class="edit-card">
+
+    <form
+      method="POST"
+      action="/listings/<%= listing._id %>?_method=PUT"
+      novalidate
+      class="needs-validation edit-form"
+      enctype="multipart/form-data"
+    >
+
+      <!-- Title -->
+      <div class="mb-4">
+        <label for="title" class="form-label">Listing title</label>
+
+        <input
+          id="title"
+          name="listing[title]"
+          value="<%= listing.title %>"
+          type="text"
+          class="form-control"
+          placeholder="Give your place a catchy title"
+          required
+        >
+
+        <div class="invalid-feedback">
+          Please enter a listing title.
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <label for="description" class="form-label">Description</label>
+
+        <textarea
+          id="description"
+          name="listing[description]"
+          class="form-control"
+          placeholder="Describe your property and what makes it special"
+          required
+        ><%= listing.description %></textarea>
+
+        <div class="invalid-feedback">
+          Please enter a description.
+        </div>
+      </div>
+
+      <!-- Current image -->
+      <div class="mb-4">
+        <label class="form-label">Current listing image</label>
+
+        <div class="edit-image-section">
+          <p class="edit-image-title">
+            <i class="fa-regular fa-image me-2"></i>
+            Original image
+          </p>
+
+          <img
+            src="<%= originalImageUrl || listing.image.url %>"
+            alt="Current image of <%= listing.title %>"
+            class="edit-current-image"
+          >
+
+          <p class="edit-image-note">
+            This is the image currently displayed on your listing.
+          </p>
+        </div>
+      </div>
+
+      <!-- Optional image replacement -->
+      <div class="mb-4">
+        <label for="image" class="form-label">
+          Upload a new image
+          <span class="text-muted fw-normal">(optional)</span>
+        </label>
+
+        <input
+          id="image"
+          name="listing[image]"
+          type="file"
+          class="form-control"
+          accept="image/*"
+        >
+
+        <div class="form-text">
+          Leave this empty to keep your current image.
+        </div>
+      </div>
+
+      <hr class="edit-form-divider">
+
+      <!-- Price and country -->
+      <div class="row">
+        <div class="col-12 col-md-5 mb-4">
+          <label for="price" class="form-label">Price per night (₹)</label>
+
+          <input
+            id="price"
+            name="listing[price]"
+            value="<%= listing.price %>"
+            type="number"
+            min="1"
+            step="1"
+            class="form-control"
+            placeholder="2500"
+            required
+          >
+
+          <div class="invalid-feedback">
+            Please enter a valid price.
+          </div>
+        </div>
+
+        <div class="col-12 col-md-7 mb-4">
+          <label for="country" class="form-label">Country</label>
+
+          <input
+            id="country"
+            name="listing[country]"
+            value="<%= listing.country %>"
+            type="text"
+            class="form-control"
+            placeholder="India"
+            required
+          >
+
+          <div class="invalid-feedback">
+            Please enter the country name.
+          </div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="mb-2">
+        <label for="location" class="form-label">Location</label>
+
+        <input
+          id="location"
+          name="listing[location]"
+          value="<%= listing.location %>"
+          type="text"
+          class="form-control"
+          placeholder="Jaipur, Rajasthan"
+          required
+        >
+
+        <div class="invalid-feedback">
+          Please enter the listing location.
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="edit-form-actions">
+        <button type="submit" class="edit-submit-btn">
+          <i class="fa-regular fa-floppy-disk"></i>
+          Save changes
+        </button>
+
+        <a
+          href="/listings/<%= listing._id %>"
+          class="edit-cancel-btn"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  (() => {
+    "use strict";
+
+    const forms = document.querySelectorAll(".needs-validation");
+
+    Array.from(forms).forEach((form) => {
+      form.addEventListener("submit", (event) => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        form.classList.add("was-validated");
+      });
+    });
+  })();
+</script>

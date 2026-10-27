@@ -1,0 +1,567 @@
+
+
+
+<%
+  const isLoggedIn = typeof currUser !== "undefined" && !!currUser;
+  const userName = isLoggedIn
+    ? String(currUser.username || currUser.name || currUser.email || "User")
+    : "";
+  const userInitial = userName.trim() ? userName.trim().charAt(0).toUpperCase() : "";
+  const searchLocation = typeof locationQuery !== "undefined"
+    ? locationQuery
+    : (typeof query !== "undefined" ? query : "");
+%>
+
+<nav class="wl-navbar">
+  <div class="wl-navbar-inner">
+    <a class="wl-brand" href="/listings" aria-label="WanderLust home">
+      <i class="fa-brands fa-airbnb" aria-hidden="true" title="WanderLust"></i>
+      <span>WanderLust</span>
+    </a>
+
+    <form class="wl-search" action="/listings" method="GET" role="search">
+      <label class="visually-hidden" for="wl-location">Search destinations</label>
+      <input
+        id="wl-location"
+        type="search"
+        name="location"
+        placeholder="Search destinations"
+        value="<%= searchLocation %>"
+        autocomplete="off">
+      <button type="submit" aria-label="Search listings">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      </button>
+    </form>
+
+    <div class="wl-actions">
+      <a class="wl-host-link" href="/listings/new">Add a listing</a>
+      <a class="wl-explore-link" href="/listings">Explore</a>
+
+      <div class="wl-profile-wrap">
+        <button
+          class="wl-profile-button"
+          type="button"
+          id="wlProfileButton"
+          aria-expanded="false"
+          aria-controls="wlProfileMenu"
+          aria-label="Open account menu">
+          <i class="fa-solid fa-bars wl-bars-icon" aria-hidden="true"></i>
+          <% if (isLoggedIn) { %>
+            <span class="wl-avatar" aria-hidden="true"><%= userInitial %></span>
+            <span class="wl-profile-name"><%= userName %></span>
+          <% } else { %>
+            <span class="wl-guest-avatar" aria-hidden="true">
+              <i class="fa-solid fa-user"></i>
+            </span>
+          <% } %>
+        </button>
+
+        <div class="wl-profile-menu" id="wlProfileMenu" hidden>
+          <% if (isLoggedIn) { %>
+            <div class="wl-menu-greeting">
+              <span class="wl-menu-avatar" aria-hidden="true"><%= userInitial %></span>
+              <span class="wl-greeting-text">
+                <strong>Hello, <%= userName %></strong>
+                <small>Welcome to WanderLust</small>
+              </span>
+            </div>
+            <div class="wl-menu-divider"></div>
+            <a href="/listings/new">
+              <i class="fa-solid fa-house-circle-check" aria-hidden="true"></i>
+              Add a listing
+            </a>
+           
+            <div class="wl-menu-divider"></div>
+            <form action="/logout" method="GET" class="wl-logout-form">
+              <button type="submit" class="wl-logout-button">
+                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                Log out
+              </button>
+            </form>
+          <% } else { %>
+            <a class="wl-menu-strong" href="/signup">
+              <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+              Sign up
+            </a>
+            <a href="/login">
+              <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
+              Log in
+            </a>
+            <div class="wl-menu-divider"></div>
+           
+           
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .wl-navbar {
+    position: relative;
+    z-index: 1050;
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+
+  .wl-navbar,
+  .wl-navbar * {
+    box-sizing: border-box;
+  }
+
+  .wl-navbar-inner {
+    max-width: 1440px;
+    min-height: 82px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: grid;
+    grid-template-columns: minmax(190px, 1fr) minmax(220px, 380px) minmax(240px, 1fr);
+    align-items: center;
+    gap: 24px;
+  }
+
+  .wl-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    justify-self: start;
+    color: #ff385c;
+    text-decoration: none;
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: -0.7px;
+    white-space: nowrap;
+  }
+
+  .wl-brand i {
+    font-size: 32px;
+  }
+
+  .wl-brand:hover {
+    color: #e31c5f;
+  }
+
+  .wl-search {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    padding: 5px 6px 5px 18px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 5%);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .wl-search:focus-within,
+  .wl-search:hover {
+    box-shadow: 0 3px 9px rgb(0 0 0 / 12%);
+  }
+
+  .wl-search input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #222;
+    font: inherit;
+    font-size: 13px;
+  }
+
+  .wl-search input::placeholder {
+    color: #717171;
+  }
+
+  .wl-search input::-webkit-search-cancel-button {
+    cursor: pointer;
+  }
+
+  .wl-search button {
+    display: grid;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: #ff385c;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .wl-search button:hover {
+    background: #e31c5f;
+  }
+
+  .wl-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 15px;
+    min-width: 0;
+  }
+
+  .wl-host-link,
+  .wl-explore-link {
+    padding: 11px 10px;
+    border-radius: 24px;
+    color: #222;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .wl-host-link:hover,
+  .wl-explore-link:hover {
+    background: #f7f7f7;
+  }
+
+  .wl-profile-wrap {
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  .wl-profile-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+    max-width: 230px;
+    padding: 5px 8px 5px 14px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    background: #fff;
+    color: #222;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .wl-profile-button:hover,
+  .wl-profile-button[aria-expanded="true"] {
+    box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
+  }
+
+  .wl-bars-icon {
+    color: #555;
+    font-size: 15px;
+  }
+
+  .wl-avatar,
+  .wl-menu-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff385c, #bd1e59);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .wl-profile-name {
+    overflow: hidden;
+    max-width: 115px;
+    color: #222;
+    font-size: 13px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .wl-guest-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f2f2f2;
+    color: #666;
+  }
+
+  .wl-profile-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 1100;
+    width: 265px;
+    padding: 8px;
+    border: 1px solid #eee;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 28px rgb(0 0 0 / 15%);
+  }
+
+  .wl-profile-menu[hidden] {
+    display: none !important;
+  }
+
+  .wl-profile-menu a,
+  .wl-logout-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #222;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .wl-profile-menu a:hover,
+  .wl-logout-button:hover {
+    background: #f7f7f7;
+  }
+
+  .wl-profile-menu a i,
+  .wl-logout-button i {
+    width: 17px;
+    color: #666;
+    text-align: center;
+  }
+
+  .wl-profile-menu .wl-menu-strong {
+    font-weight: 700;
+  }
+
+  .wl-menu-greeting {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px 10px;
+  }
+
+  .wl-greeting-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .wl-greeting-text strong {
+    overflow: hidden;
+    color: #222;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .wl-greeting-text small {
+    color: #717171;
+    font-size: 11px;
+  }
+
+  .wl-menu-divider {
+    height: 1px;
+    margin: 6px 0;
+    background: #eee;
+  }
+
+  .wl-logout-form {
+    margin: 0;
+  }
+
+  .wl-logout-button {
+    color: #c1354b;
+  }
+
+  .wl-logout-button i {
+    color: #c1354b;
+  }
+
+  @media (max-width: 1000px) {
+    .wl-navbar-inner {
+      grid-template-columns: auto minmax(180px, 1fr) auto;
+      gap: 14px;
+      padding-right: 20px;
+      padding-left: 20px;
+    }
+
+    .wl-brand {
+      font-size: 21px;
+    }
+
+    .wl-brand i {
+      font-size: 29px;
+    }
+
+    .wl-actions {
+      gap: 5px;
+    }
+
+    .wl-host-link,
+    .wl-explore-link {
+      padding-right: 8px;
+      padding-left: 8px;
+    }
+
+    .wl-profile-name {
+      max-width: 80px;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .wl-navbar-inner {
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    .wl-brand {
+      font-size: 22px;
+    }
+
+    .wl-brand i {
+      font-size: 29px;
+    }
+
+    .wl-search {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      height: 44px;
+    }
+
+    .wl-actions {
+      grid-column: 2;
+      grid-row: 1;
+      gap: 6px;
+    }
+
+    .wl-host-link {
+      display: none;
+    }
+
+    .wl-explore-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 9px;
+      font-size: 12px;
+    }
+
+    .wl-profile-button {
+      min-height: 43px;
+      gap: 7px;
+      padding: 4px 6px 4px 10px;
+    }
+
+    .wl-avatar,
+    .wl-guest-avatar {
+      width: 32px;
+      height: 32px;
+    }
+
+    .wl-profile-name {
+      max-width: 75px;
+      font-size: 12px;
+    }
+
+    .wl-profile-menu {
+      top: calc(100% + 9px);
+      width: min(265px, calc(100vw - 32px));
+    }
+  }
+
+  @media (max-width: 380px) {
+    .wl-navbar-inner {
+      padding-right: 10px;
+      padding-left: 10px;
+    }
+
+    .wl-brand {
+      gap: 6px;
+      font-size: 19px;
+    }
+
+    .wl-brand i {
+      font-size: 26px;
+    }
+
+    .wl-explore-link {
+      display: none;
+    }
+
+    .wl-profile-name {
+      max-width: 62px;
+    }
+  }
+</style>
+
+<script>
+  (() => {
+    const button = document.getElementById("wlProfileButton");
+    const menu = document.getElementById("wlProfileMenu");
+
+    if (!button || !menu || button.dataset.wlReady === "true") return;
+    button.dataset.wlReady = "true";
+
+    function closeMenu() {
+      menu.hidden = true;
+      button.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleMenu() {
+      const shouldOpen = menu.hidden;
+      menu.hidden = !shouldOpen;
+      button.setAttribute("aria-expanded", String(shouldOpen));
+    }
+
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggleMenu();
+    });
+
+    menu.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!menu.hidden && !menu.contains(event.target) && !button.contains(event.target)) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeMenu();
+        button.focus();
+      }
+    });
+  })();
+
+
+   document.addEventListener("click", function (event) {
+    const closeButton = event.target.closest(
+      ".btn-close, .flash-close"
+    );
+
+    if (!closeButton) return;
+
+    const flashMessage = closeButton.closest(
+      ".alert, .custom-flash, .flash-message"
+    );
+
+    if (flashMessage) {
+      flashMessage.remove();
+    }
+  });
+</script>

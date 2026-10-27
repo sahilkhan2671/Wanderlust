@@ -1,0 +1,558 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  .index-page {
+    width: 100%;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 1.25rem 1.5rem 2.5rem;
+    box-sizing: border-box;
+  }
+
+  /* Categories */
+  .category-section {
+    width: 100%;
+    margin-bottom: 1.25rem;
+  }
+
+  .category-bar {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  #filters {
+    display: flex;
+    flex: 1;
+    align-items: stretch;
+    gap: 1.6rem;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.6rem 0.15rem 0.85rem;
+    border-bottom: 1px solid #eee;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter {
+    flex: 0 0 auto;
+    min-width: 65px;
+    max-width: 110px;
+    padding: 0.35rem 0.15rem 0.65rem;
+    text-align: center;
+    color: #717171;
+    opacity: 0.85;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, opacity 0.2s, border-color 0.2s;
+  }
+
+  .filter i {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+  }
+
+  .filter p {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .filter:hover,
+  .filter:focus-visible {
+    color: #222;
+    opacity: 1;
+    border-bottom-color: #222;
+  }
+
+  /* Listing toolbar */
+  .listing-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1.25rem 0 1.2rem;
+  }
+
+  .listings-heading {
+    margin: 0;
+    color: #222;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  /* Tax toggle */
+  .tax-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: white;
+  }
+
+  .tax-toggle-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .tax-toggle-title {
+    color: #222;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .tax-toggle-subtitle {
+    color: #717171;
+    font-size: 0.7rem;
+  }
+
+  .tax-toggle .form-check {
+    display: flex;
+    align-items: center;
+    min-height: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tax-toggle .form-check-input {
+    float: none;
+    width: 2.4rem;
+    height: 1.3rem;
+    margin: 0;
+    cursor: pointer;
+    box-shadow: none;
+    border-color: #aaa;
+  }
+
+  .tax-toggle .form-check-input:checked {
+    background-color: #ff385c;
+    border-color: #ff385c;
+  }
+
+  /* Listing grid */
+  .listings-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    column-gap: 20px;
+    row-gap: 32px;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .listings-grid > .col {
+    width: auto;
+    min-width: 0;
+    padding: 0;
+  }
+
+  .listing-link {
+    display: block;
+    height: 100%;
+    min-width: 0;
+    color: #222;
+    text-decoration: none;
+  }
+
+  .listing-card {
+    height: 100%;
+    min-width: 0;
+    margin: 0;
+    border: none !important;
+    background: transparent;
+  }
+
+  .listing-img-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    background: #f3f3f3;
+  }
+
+  .listing-card img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.25s ease;
+  }
+
+  .listing-link:hover .listing-card img {
+    transform: scale(1.03);
+  }
+
+  .listing-card .card-body {
+    padding: 10px 0 0;
+  }
+
+  .listing-card .card-text {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .listing-title {
+    display: block;
+    overflow: hidden;
+    margin-bottom: 3px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .listing-price {
+    font-weight: 600;
+  }
+
+  /* Favorite heart */
+  .listing-heart {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .listing-heart:hover {
+    transform: scale(1.08);
+    color: #ff385c;
+  }
+
+  .listing-heart.is-favorite {
+    color: #ff385c;
+  }
+
+  /* Tax-inclusive price */
+  .tax-info {
+    display: none;
+    color: #717171;
+    font-size: 0.76rem;
+    font-weight: 400;
+  }
+
+  .tax-info.show {
+    display: block;
+    margin-top: 3px;
+  }
+
+  /* Responsive */
+  @media (min-width: 1400px) {
+    .listings-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1201px) and (max-width: 1399px) {
+    .listings-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .listings-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 26px 18px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .index-page {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .listings-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px 16px;
+    }
+
+    #filters {
+      gap: 1.2rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .index-page {
+      padding: 1rem 0.85rem 1.5rem;
+    }
+
+    .listing-toolbar {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 12px;
+      margin: 1rem 0;
+    }
+
+    .listings-heading {
+      font-size: 1.2rem;
+    }
+
+    .tax-toggle {
+      width: 100%;
+      padding: 0.7rem 0.8rem;
+    }
+
+    .listings-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px 12px;
+    }
+
+    .listing-img-wrapper {
+      border-radius: 10px;
+    }
+
+    .listing-card img {
+      border-radius: 10px;
+    }
+
+    .listing-card .card-body {
+      padding-top: 8px;
+    }
+
+    .listing-card .card-text {
+      font-size: 0.8rem;
+    }
+
+    .listing-heart {
+      top: 8px;
+      right: 8px;
+      width: 30px;
+      height: 30px;
+    }
+
+    #filters {
+      gap: 1rem;
+    }
+
+    .filter {
+      min-width: 59px;
+    }
+
+    .filter i {
+      font-size: 1.2rem;
+    }
+
+    .filter p {
+      font-size: 0.68rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .index-page {
+      padding-left: 0.65rem;
+      padding-right: 0.65rem;
+    }
+
+    .listings-grid {
+      gap: 20px 10px;
+    }
+
+    .category-bar {
+      gap: 5px;
+    }
+
+    .filter {
+      min-width: 58px;
+    }
+  }
+</style>
+
+<div class="index-page">
+
+  <!-- Stay categories -->
+  <section class="category-section" aria-label="Stay categories">
+    <div class="category-bar">
+
+      <div id="filters" tabindex="0" aria-label="Browse stay categories">
+
+        <div class="filter">
+          <i class="fa-solid fa-fire"></i>
+          <p>Trending</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-bed"></i>
+          <p>Rooms</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-city"></i>
+          <p>Iconic Cities</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-mountain-sun"></i>
+          <p>Mountain</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-chess-rook"></i>
+          <p>Castles</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-person-swimming"></i>
+          <p>Amazing pools</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-campground"></i>
+          <p>Camping</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-tractor"></i>
+          <p>Farms</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-snowflake"></i>
+          <p>Arctic</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-igloo"></i>
+          <p>Domes</p>
+        </div>
+
+        <div class="filter">
+          <i class="fa-solid fa-sailboat"></i>
+          <p>Boats</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Listing heading and tax toggle -->
+  <div class="listing-toolbar">
+    <h2 class="listings-heading">Explore stays</h2>
+
+    <div class="tax-toggle">
+      <div class="tax-toggle-text">
+        <span class="tax-toggle-title">Display total after taxes</span>
+        <span class="tax-toggle-subtitle">See estimated price per night</span>
+      </div>
+
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="switchCheckDefault"
+          aria-label="Display prices including estimated tax"
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Listing cards -->
+  <div class="listings-grid">
+    <% for (let listing of allListings) { %>
+
+      <div class="col">
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+          <div class="card listing-card">
+
+            <div class="listing-img-wrapper">
+              <img
+                src="<%= listing.image.url %>"
+                alt="<%= listing.title %>"
+                loading="lazy"
+              >
+
+              <button
+                type="button"
+                class="listing-heart"
+                aria-label="Toggle favorite"
+                aria-pressed="false"
+              >
+                <i class="fa-regular fa-heart"></i>
+              </button>
+            </div>
+
+            <div class="card-body">
+              <p class="card-text">
+                <span class="listing-title"><%= listing.title %></span>
+
+                <span class="listing-price">
+                  &#8377; <%= Number(listing.price).toLocaleString("en-IN") %>
+                </span>
+                <span>/ night</span>
+
+                <span class="tax-info">
+                  &#8377; <%= Math.round(Number(listing.price) * 1.18).toLocaleString("en-IN") %>
+                  / night including estimated 18% GST
+                </span>
+              </p>
+            </div>
+
+          </div>
+        </a>
+      </div>
+
+    <% } %>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+
+    // Display prices including estimated tax
+    const taxSwitch = document.getElementById("switchCheckDefault");
+    const taxPrices = document.querySelectorAll(".tax-info");
+
+    if (taxSwitch) {
+      taxSwitch.addEventListener("change", function () {
+        taxPrices.forEach(function (price) {
+          price.classList.toggle("show", taxSwitch.checked);
+        });
+      });
+    }
+
+    // Favorite heart interaction
+    document.querySelectorAll(".listing-heart").forEach(function (button) {
+      button.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const isFavorite = button.classList.toggle("is-favorite");
+        button.setAttribute("aria-pressed", String(isFavorite));
+
+        const heartIcon = button.querySelector("i");
+
+        if (heartIcon) {
+          heartIcon.classList.toggle("fa-solid", isFavorite);
+          heartIcon.classList.toggle("fa-regular", !isFavorite);
+        }
+      });
+    });
+
+  });
+</script>

@@ -1,0 +1,315 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  .new-listing-page {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  .listing-form-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 20px;
+    padding: 2.25rem;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+  }
+
+  .form-heading {
+    font-size: 2rem;
+    font-weight: 750;
+    color: #222;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-subtitle {
+    color: #717171;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .listing-form-card .form-label {
+    font-weight: 650;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .listing-form-card .form-control {
+    min-height: 48px;
+    border: 1px solid #d5d5d5;
+    border-radius: 10px;
+    padding: 0.75rem 0.9rem;
+    font-size: 0.95rem;
+    box-shadow: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .listing-form-card textarea.form-control {
+    min-height: 135px;
+    resize: vertical;
+  }
+
+  .listing-form-card .form-control:focus {
+    border-color: #ff385c;
+    box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.12);
+  }
+
+  .form-section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 1.75rem 0 1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .image-upload-box {
+    border: 1.5px dashed #c9c9c9;
+    border-radius: 12px;
+    padding: 1.2rem;
+    background: #fafafa;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .image-upload-box:hover {
+    border-color: #ff385c;
+    background: #fff8f9;
+  }
+
+  .image-upload-icon {
+    font-size: 1.6rem;
+    color: #ff385c;
+    margin-bottom: 0.5rem;
+  }
+
+  .image-help {
+    display: block;
+    color: #777;
+    font-size: 0.8rem;
+    margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+
+  .listing-submit-btn {
+    width: 100%;
+    min-height: 50px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ff385c, #e61e4d);
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .listing-submit-btn:hover {
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(230, 30, 77, 0.22);
+  }
+
+  .listing-submit-btn:focus-visible {
+    outline: 3px solid rgba(255, 56, 92, 0.35);
+    outline-offset: 3px;
+  }
+
+  .form-note {
+    font-size: 0.82rem;
+    color: #777;
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 576px) {
+    .new-listing-page {
+      padding: 1.25rem 0.75rem 2rem;
+    }
+
+    .listing-form-card {
+      padding: 1.35rem 1rem;
+      border-radius: 15px;
+    }
+
+    .form-heading {
+      font-size: 1.65rem;
+    }
+
+    .form-subtitle {
+      font-size: 0.88rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .listing-form-card .form-control {
+      font-size: 16px;
+    }
+
+    .form-section-title {
+      margin-top: 1.4rem;
+    }
+  }
+</style>
+
+<div class="new-listing-page">
+  <div class="listing-form-card">
+
+    <h1 class="form-heading">Create a new listing</h1>
+
+    <p class="form-subtitle">
+      Share your space with travelers and help them discover their next
+      favorite destination.
+    </p>
+
+    <form
+      method="POST"
+      action="/listings"
+      novalidate
+      class="needs-validation"
+      enctype="multipart/form-data"
+    >
+
+      <!-- Basic details -->
+      <h2 class="form-section-title">Basic information</h2>
+
+      <div class="mb-3">
+        <label for="title" class="form-label">Listing title</label>
+        <input
+          name="listing[title]"
+          id="title"
+          placeholder="e.g. Cozy mountain cabin with a view"
+          type="text"
+          class="form-control"
+          required
+          minlength="3"
+          maxlength="100"
+        >
+        <div class="invalid-feedback">
+          Please enter a title between 3 and 100 characters.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea
+          name="listing[description]"
+          id="description"
+          placeholder="Describe your property, its amenities, and what makes it special..."
+          class="form-control"
+          required
+          minlength="10"
+        ></textarea>
+        <div class="invalid-feedback">
+          Please provide a description of at least 10 characters.
+        </div>
+      </div>
+
+      <!-- Image -->
+      <h2 class="form-section-title">Property photos</h2>
+
+      <div class="mb-3">
+        <label for="image-url" class="form-label">
+          Upload a listing image
+        </label>
+
+        <div class="image-upload-box">
+          <div class="image-upload-icon">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+
+          <input
+            name="listing[image]"
+            id="image-url"
+            type="file"
+            class="form-control"
+            accept="image/*"
+          >
+
+          <span class="image-help">
+            Choose a clear photo of your property. Check that your server
+            supports the upload format and size.
+          </span>
+        </div>
+      </div>
+
+      <!-- Pricing and location -->
+      <h2 class="form-section-title">Pricing and location</h2>
+
+      <div class="row">
+        <div class="mb-3 col-md-5">
+          <label for="price" class="form-label">Price per night (₹)</label>
+          <input
+            name="listing[price]"
+            id="price"
+            placeholder="e.g. 2500"
+            type="number"
+            class="form-control"
+            min="1"
+            step="1"
+            required
+          >
+          <div class="invalid-feedback">
+            Please enter a valid price greater than zero.
+          </div>
+        </div>
+
+        <div class="mb-3 col-md-7">
+          <label for="country" class="form-label">Country</label>
+          <input
+            name="listing[country]"
+            id="country"
+            placeholder="India"
+            type="text"
+            class="form-control"
+            required
+          >
+          <div class="invalid-feedback">
+            Please enter the country.
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="location" class="form-label">Property location</label>
+        <input
+          name="listing[location]"
+          id="location"
+          placeholder="e.g. Jaipur, Rajasthan"
+          type="text"
+          class="form-control"
+          required
+        >
+        <div class="invalid-feedback">
+          Please enter the property location.
+        </div>
+      </div>
+
+      <button type="submit" class="btn listing-submit-btn mt-3">
+        <i class="fa-solid fa-plus me-2"></i>
+        Publish listing
+      </button>
+
+      <p class="form-note">
+        Double-check your listing details before publishing.
+      </p>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const forms = document.querySelectorAll(".needs-validation");
+
+    Array.from(forms).forEach((form) => {
+      form.addEventListener("submit", (event) => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        form.classList.add("was-validated");
+      });
+    });
+  })();
+</script>
