@@ -24,6 +24,9 @@ import User from "./models/user.js";
 // Create Express app
 const app = express();
 
+// Trust Render's reverse proxy
+app.set("trust proxy", 1);
+
 // __dirname setup
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
